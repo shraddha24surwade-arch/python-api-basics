@@ -80,12 +80,35 @@ for code, meaning in status_codes.items():
 #
 # Exercise 1: Fetch user with ID 5 and print their phone number
 #             URL: https://jsonplaceholder.typicode.com/users/5
-#
+print("\n------Phone Number------")
+url= "https://jsonplaceholder.typicode.com/users/5"
+response = requests.get(url)
+data = response.json()
+print(f"Phone Number: {data['phone']}")
+
 # Exercise 2: Check if a resource exists before printing data
-#             if response.status_code == 200:
-#                 print(data)
-#             else:
-#                 print("Resource not found!")
-#
+print("\n--------------------------------------------")
+url = "https://jsonplaceholder.typicode.com/users/1"
+response = requests.get(url)
+data = response.json()
+if (response.status_code == 200):
+    print(data)
+else:
+    print("Resource not found!")
+
+print("\n--------------------------------------------")
+url = "https://jsonplaceholder.typicode.com/users/9999"
+response = requests.get(url)
+data = response.json()
+if (response.status_code == 200):
+    print(data)
+else:
+    print("Resource not found!")
+
 # Exercise 3: Count how many comments are on post ID 1
 #             URL: https://jsonplaceholder.typicode.com/posts/1/comments
+print("\n--------------count of comments on postid 1------------")
+url = "https://jsonplaceholder.typicode.com/posts/1/comments"
+response = requests.get(url)
+data = response.json()
+print(len(data))

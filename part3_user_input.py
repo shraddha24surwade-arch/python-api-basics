@@ -76,6 +76,106 @@ def get_crypto_price():
         print("Try: btc-bitcoin, eth-ethereum, doge-dogecoin")
 
 
+
+# Exercise 1: Add a function to fetch weather for a city
+def get_lat_long(city):
+    """Fetch latitude and longitude for a city using Open-Meteo Geocoding API"""
+    geo_url = "https://geocoding-api.open-meteo.com/v1/search"
+    params = {
+        "name": city,
+        "count": 1,
+        "language": "en",
+        "format": "json"
+    }
+
+    response = requests.get(geo_url, params=params)
+    data = response.json()
+
+    if "results" not in data:
+        return None, None
+
+    latitude = data["results"][0]["latitude"]
+    longitude = data["results"][0]["longitude"]
+    return latitude, longitude
+
+
+def get_weather(city):
+    """Fetch current weather for a city"""
+    lat, lon = get_lat_long(city)
+
+    if lat is None or lon is None:
+        print("City not found")
+        return
+
+    weather_url = "https://api.open-meteo.com/v1/forecast"
+    params = {
+        "latitude": lat,
+        "longitude": lon,
+        "current_weather": "true"
+    }
+
+    response = requests.get(weather_url, params=params)
+    data = response.json()
+
+    weather = data["current_weather"]
+    print(f"\n🌍 Weather in {city.title()}")
+    print(f"🌡 Temperature: {weather['temperature']}°C")
+    print(f"💨 Wind Speed: {weather['windspeed']} km/h")
+    print(f"🧭 Wind Direction: {weather['winddirection']}°")
+    print(f"⏰ Time: {weather['time']}")
+
+
+
+# Exercise 2: Add a function to search todos by completion status
+def search_todos_by_status(completed):
+    """
+    Fetch todos filtered by completion status
+    completed: True or False
+    """
+    url = "https://jsonplaceholder.typicode.com/todos"
+    params = {
+        "completed": str(completed).lower()  # true / false
+    }
+
+    response = requests.get(url, params=params)
+    todos = response.json()
+
+    print(f"\n📋 Todos with completed = {completed}\n")
+
+    for todo in todos[:10]:  # showing first 10 for readability
+        print(f"- [{ '✔' if todo['completed'] else '✘' }] {todo['title']}")
+
+    print(f"\nTotal results: {len(todos)}")
+
+
+
+# Exercise 3: Add input validation (check if user_id is a number)
+def search_todos_by_user(user_id):
+    """
+    Fetch todos for a given user_id after validating input
+    """
+
+    # ---- Input Validation ----
+    if not str(user_id).isdigit():
+        print("Invalid input: user_id must be a number")
+        return
+
+    url = "https://jsonplaceholder.typicode.com/todos"
+    params = {
+        "userId": int(user_id)
+    }
+
+    response = requests.get(url, params=params)
+    todos = response.json()
+
+    print(f"\n📋 Todos for user_id = {user_id}\n")
+
+    for todo in todos[:10]:
+        print(f"- [{ '✔' if todo['completed'] else '✘' }] {todo['title']}")
+
+    print(f"\nTotal results: {len(todos)}")
+
+
 def main():
     """Main menu for the program."""
     print("=" * 40)
@@ -87,9 +187,12 @@ def main():
         print("1. Look up user info")
         print("2. Search posts by user")
         print("3. Check crypto price")
-        print("4. Exit")
+        print("4. Find current weather")
+        print("5. Search todos by status")
+        print("6. Search todos by user")
+        print("7. Exit")
 
-        choice = input("\nEnter choice (1-4): ")
+        choice = input("\nEnter choice (1-7): ")
 
         if choice == "1":
             get_user_info()
@@ -98,6 +201,15 @@ def main():
         elif choice == "3":
             get_crypto_price()
         elif choice == "4":
+            city_name = input("Enter city name: ")
+            get_weather(city_name)
+        elif choice == "5":
+            search_todos_by_status(True)   # completed todos
+            search_todos_by_status(False)  # pending todos
+        elif choice == "6":
+            user_input = input("Enter user ID: ")
+            search_todos_by_user(user_input)
+        elif choice == "7":
             print("\nGoodbye!")
             break
         else:
@@ -106,17 +218,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-# --- EXERCISES ---
-#
-# Exercise 1: Add a function to fetch weather for a city
-#             Use Open-Meteo API (no key required):
-#             https://api.open-meteo.com/v1/forecast?latitude=28.61&longitude=77.23&current_weather=true
-#             Challenge: Let user input city name (you'll need to find lat/long)
-#
-# Exercise 2: Add a function to search todos by completion status
-#             URL: https://jsonplaceholder.typicode.com/todos
-#             Params: completed=true or completed=false
-#
-# Exercise 3: Add input validation (check if user_id is a number)
